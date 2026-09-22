@@ -94,6 +94,36 @@ def init_db():
             notifications INTEGER
         )
     ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT,
+            amount REAL,
+            description TEXT,
+            type TEXT,
+            category TEXT DEFAULT 'General'
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS monthly_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            month TEXT,
+            revenue REAL,
+            expenses REAL,
+            cash_balance REAL,
+            profit REAL
+        )
+    ''')
     
     conn.commit()
     conn.close()
@@ -141,6 +171,41 @@ def seed_db():
         
         c.execute("INSERT INTO user_settings (name, email, company, notifications) VALUES (?, ?, ?, ?)", ("Mohammad Kaif", "admin@asterco.in", "Aster & Co.", 1))
 
+        # Seed transactions
+        transactions = [
+            ("2026-09-22", 84500, "Invoice INV-28491 — Brightline Supplies", "expense", "Vendor Payment"),
+            ("2026-09-21", 42200, "Invoice INV-28477 — Aria Logistics", "expense", "Logistics"),
+            ("2026-09-20", 256000, "Client payment — TechPrime Solutions", "income", "Client Revenue"),
+            ("2026-09-19", 28900, "Invoice INV-28462 — Nova Digital", "expense", "Cloud Hosting"),
+            ("2026-09-18", 180000, "Client payment — GreenLeaf Organics", "income", "Client Revenue"),
+            ("2026-09-17", 35000, "Salary advance — Alice Smith", "expense", "Payroll"),
+            ("2026-09-16", 120000, "Client payment — BlueWave Retail", "income", "Client Revenue"),
+            ("2026-09-15", 50000, "Invoice INV-99001 — Shady Corp", "expense", "Consulting"),
+            ("2026-09-14", 15000, "Office rent — September", "expense", "Rent"),
+            ("2026-09-13", 92000, "Client payment — UrbanNest Interiors", "income", "Client Revenue"),
+            ("2026-09-12", 10000, "Invoice INV-99002 — Shady Corp", "expense", "Advisory"),
+            ("2026-09-11", 75000, "Client retainer — NovaStar Media", "income", "Client Revenue"),
+            ("2026-09-10", 22000, "Marketing campaign — Google Ads", "expense", "Marketing"),
+            ("2026-09-09", 8500, "Software license — Figma", "expense", "Software"),
+            ("2026-09-08", 145000, "Client payment — PeakVentures Capital", "income", "Client Revenue"),
+            ("2026-09-05", 18000, "Electricity & Utilities", "expense", "Utilities"),
+            ("2026-09-03", 95000, "Client payment — Meridian Exports", "income", "Client Revenue"),
+            ("2026-09-01", 320000, "Payroll — September batch", "expense", "Payroll"),
+        ]
+        c.executemany("INSERT INTO transactions (date, amount, description, type, category) VALUES (?, ?, ?, ?, ?)", transactions)
+
+        # Seed last 6 months financial history
+        monthly_history = [
+            ("Apr 2026", 820000, 610000, 312000, 210000),
+            ("May 2026", 880000, 640000, 345000, 240000),
+            ("Jun 2026", 950000, 690000, 378000, 260000),
+            ("Jul 2026", 920000, 710000, 362000, 210000),
+            ("Aug 2026", 980000, 700000, 390000, 280000),
+            ("Sep 2026", 1024000, 718000, 402000, 306000),
+        ]
+        c.executemany("INSERT INTO monthly_history (month, revenue, expenses, cash_balance, profit) VALUES (?, ?, ?, ?, ?)", monthly_history)
+
         conn.commit()
     
     conn.close()
+

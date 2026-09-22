@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from pydantic import BaseModel
 import requests
+import os
 from database.connection import get_db
 
 router = APIRouter()
@@ -43,6 +44,10 @@ class TranslateRequest(BaseModel):
 class TimeMachineRequest(BaseModel):
     vendor_name: str
     months_ago: int
+
+class AuthRequest(BaseModel):
+    username: str
+    password: str
 
 @router.get("/health")
 def health():
@@ -233,11 +238,31 @@ def time_machine(req: TimeMachineRequest, db = Depends(get_db)):
 @router.post("/chat")
 def chat(req: ChatRequest, db = Depends(get_db)):
     cursor = db.cursor()
-    cursor.execute("INSERT INTO chat_history (sender, message) VALUES (?, ?)", ("user", req.message))
     
+    # Save user message
+    cursor.execute("INSERT INTO chat_history (sender, message) VALUES (?, ?)", ("user", req.message))
+    db.commit()
+
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if api_key and api_key != "":
+        try:
+            headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+            data = {
+                "model": "gpt-4o-mini",
+                "messages": [{"role": "system", "content": "You are FinGuard, an AI financial copilot. Keep responses brief and insightful."}, {"role": "user", "content": req.message}]
+            }
+            resp = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data, timeout=10)
+            if resp.status_code == 200:
+                reply = resp.json()['choices'][0]['message']['content']
+                cursor.execute("INSERT INTO chat_history (sender, message) VALUES (?, ?)", ("ai", reply))
+                db.commit()
+                return {"reply": reply}
+        except Exception:
+            pass
+            
+    # Fallback to mock logic if OpenAI fails or key is missing
     msg_lower = req.message.lower()
     
-    # Keyword based responses
     if any(word in msg_lower for word in ["cash", "forecast", "runway"]):
         reply = "Your projected cash balance is looking healthy for the next 30 days, but it approaches the reserve threshold in week 6. Consider reducing discretionary spending."
     elif any(word in msg_lower for word in ["invoice", "vendor", "spend", "expense"]):
@@ -245,10 +270,76 @@ def chat(req: ChatRequest, db = Depends(get_db)):
     elif any(word in msg_lower for word in ["hi", "hello", "hey"]):
         reply = "FinGuard is an AI-powered financial copilot that helps you monitor cash flow, forecast runway, and detect anomalies. Upload a document or ask me a question about your financials!"
     else:
-        # Fallback to human support
-        reply = "I'm sorry, I don't have enough information on that. Would you like me to connect you to a human support agent? Please contact support@asterco.in or call 1-800-FINGUARD."
+        reply = "I'm sorry, I don't have enough information on that. Would you like me to connect you to a human support agent?"
         
-    cursor.execute("INSERT INTO chat_history (sender, message) VALUES (?, ?)", ("bot", reply))
+    cursor.execute("INSERT INTO chat_history (sender, message) VALUES (?, ?)", ("ai", reply))
     db.commit()
     
     return {"reply": reply}
+
+@router.post("/login")
+def login(req: AuthRequest, db = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT id FROM users WHERE username = ? AND password = ?", (req.username, req.password))
+    row = cursor.fetchone()
+    if not row:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"token": f"fake-jwt-token-{row[0]}", "username": req.username}
+
+@router.post("/register")
+def register(req: AuthRequest, db = Depends(get_db)):
+    cursor = db.cursor()
+    try:
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (req.username, req.password))
+        db.commit()
+        return {"message": "User created successfully"}
+    except Exception:
+        raise HTTPException(status_code=400, detail="Username already exists")
+
+@router.get("/transactions")
+def get_transactions(db = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT id, date, amount, description, type, category FROM transactions ORDER BY date DESC")
+    txs = cursor.fetchall()
+    return [{"id": t[0], "date": t[1], "amount": t[2], "description": t[3], "type": t[4], "category": t[5] or "General"} for t in txs]
+
+@router.get("/monthly-history")
+def get_monthly_history(db = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT month, revenue, expenses, cash_balance, profit FROM monthly_history ORDER BY id ASC")
+    rows = cursor.fetchall()
+    return [{"month": r[0], "revenue": r[1], "expenses": r[2], "cash_balance": r[3], "profit": r[4]} for r in rows]
+
+@router.get("/vendor-detail/{name}")
+def get_vendor_detail(name: str, db = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT name, monthly_spend, change_percent, risk, last_payment, initials, color, bg, bank_account, address, tax_id FROM vendors WHERE name = ?", (name,))
+    r = cursor.fetchone()
+    if not r:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+    cursor.execute("SELECT invoice_id, amount, risk, due_date, description FROM invoices WHERE vendor = ?", (name,))
+    invoices = [{"invoice_id": i[0], "amount": i[1], "risk": i[2], "due_date": i[3], "description": i[4]} for i in cursor.fetchall()]
+    return {"name": r[0], "monthly_spend": r[1], "change": r[2], "risk": r[3], "last_payment": r[4], "initials": r[5], "color": r[6], "bg": r[7], "bank_account": r[8], "address": r[9], "tax_id": r[10], "invoices": invoices}
+
+@router.get("/crisis-detect")
+def crisis_detect(db = Depends(get_db)):
+    cursor = db.cursor()
+    cursor.execute("SELECT cash_balance, expenses FROM metrics LIMIT 1")
+    m = cursor.fetchone()
+    cash = m[0] if m else 402000
+    expenses = m[1] if m else 718000
+    monthly_burn = expenses
+    
+    cursor.execute("SELECT name, monthly_spend, change_percent FROM vendors WHERE risk = 'high' ORDER BY monthly_spend DESC LIMIT 1")
+    risky = cursor.fetchone()
+    vendor_name = risky[0] if risky else "Unknown Vendor"
+    vendor_spend = risky[1] if risky else 0
+    
+    events = [
+        {"day": 0, "severity": "warning", "title": f"Vendor cost rises — {vendor_name}", "desc": f"Monthly spend jumped to ₹{vendor_spend:,}. This is the trigger event."},
+        {"day": 14, "severity": "warning", "title": "Cash reserve drops below baseline", "desc": f"Projected cash falls to ₹{cash - int(monthly_burn * 0.5):,} as mid-month expenses clear."},
+        {"day": 27, "severity": "danger", "title": "Salary pressure builds", "desc": f"Payroll of ₹3,20,000 due. Cash buffer shrinks to ₹{cash - int(monthly_burn * 0.9):,}."},
+        {"day": 39, "severity": "danger", "title": "Supplier payment risk", "desc": "Insufficient funds for net-30 vendor invoices. Payment delays begin."},
+        {"day": 46, "severity": "critical", "title": "⚠️ RESERVE BREACHED", "desc": f"Cash balance falls below ₹3,00,000 safety threshold. Emergency measures required."},
+    ]
+    return {"events": events, "current_cash": cash, "monthly_burn": monthly_burn}
