@@ -5,12 +5,13 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
-from database.models import init_db
+from database.models import init_db, seed_db
 from api.routes import router as api_router
 from api.pdf_handler import router as pdf_router
 
 # Initialize database
 init_db()
+seed_db()
 
 app = FastAPI(title="FinGuard AI API")
 

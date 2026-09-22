@@ -5,7 +5,6 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     
-    # Create a table for uploaded documents
     c.execute('''
         CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,7 +15,6 @@ def init_db():
         )
     ''')
     
-    # Create a table for chat history
     c.execute('''
         CREATE TABLE IF NOT EXISTS chat_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +23,124 @@ def init_db():
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS metrics (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cash_balance INTEGER,
+            revenue INTEGER,
+            expenses INTEGER,
+            overall_risk INTEGER,
+            alerts INTEGER
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS vendors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            monthly_spend INTEGER,
+            change_percent TEXT,
+            risk TEXT,
+            last_payment TEXT,
+            initials TEXT,
+            color TEXT,
+            bg TEXT,
+            bank_account TEXT,
+            address TEXT,
+            tax_id TEXT
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS invoices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            invoice_id TEXT NOT NULL,
+            vendor TEXT NOT NULL,
+            amount INTEGER,
+            risk TEXT,
+            due_date TEXT,
+            description TEXT
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS employees (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            bank_account TEXT,
+            address TEXT,
+            tax_id TEXT
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS anomalies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            impact_level TEXT NOT NULL,
+            detected_time TEXT NOT NULL,
+            confidence_score INTEGER NOT NULL
+        )
+    ''')
+    
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS user_settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            email TEXT,
+            company TEXT,
+            notifications INTEGER
+        )
+    ''')
     
     conn.commit()
+    conn.close()
+
+def seed_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    
+    # Check if metrics exist to avoid double seeding
+    c.execute("SELECT COUNT(*) FROM metrics")
+    if c.fetchone()[0] == 0:
+        c.execute("INSERT INTO metrics (cash_balance, revenue, expenses, overall_risk, alerts) VALUES (402000, 1024000, 718000, 39, 3)")
+        
+        vendors = [
+            ("Brightline Supplies", 184200, "↑ 65%", "high", "18 Sep 2026", "B", "", "", "AC-12345678", "123 Main St", "TAX-9988"),
+            ("Aria Logistics", 120500, "↑ 4%", "low", "19 Sep 2026", "A", "#a47135", "#f5ece1", "AC-22334455", "456 Market St", "TAX-7766"),
+            ("Nova Digital", 86800, "↓ 8%", "low", "20 Sep 2026", "N", "#6363a1", "#e8e8f4", "AC-99999999", "789 Tech Blvd", "TAX-5544"),
+            ("Shady Corp", 20000, "↑ 100%", "high", "21 Sep 2026", "S", "#e53e3e", "#fed7d7", "AC-55555555", "101 Hidden Ln", "TAX-1111")
+        ]
+        c.executemany("INSERT INTO vendors (name, monthly_spend, change_percent, risk, last_payment, initials, color, bg, bank_account, address, tax_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", vendors)
+        
+        employees = [
+            ("Alice Smith", "AC-88888888", "321 Apple St", "TAX-8888"),
+            ("Bob Jones", "AC-55555555", "101 Hidden Ln", "TAX-1111"),
+            ("Charlie Davis", "AC-77777777", "654 Cherry St", "TAX-7777")
+        ]
+        c.executemany("INSERT INTO employees (name, bank_account, address, tax_id) VALUES (?, ?, ?, ?)", employees)
+        
+        invoices = [
+            ("INV-28491", "Brightline Supplies", 84500, "high", "28 Sep 2026", "Office supplies and furniture"),
+            ("INV-28492", "Brightline Supplies", 84500, "high", "29 Sep 2026", "Office supply and furniture"),
+            ("INV-28477", "Aria Logistics", 42200, "low", "30 Sep 2026", "Monthly logistics retainer"),
+            ("INV-28462", "Nova Digital", 28900, "low", "03 Oct 2026", "Cloud hosting services"),
+            ("INV-99001", "Shady Corp", 50000, "high", "05 Oct 2026", "Consulting services"),
+            ("INV-99002", "Shady Corp", 10000, "high", "12 Oct 2026", "Advisory fee")
+        ]
+        c.executemany("INSERT INTO invoices (invoice_id, vendor, amount, risk, due_date, description) VALUES (?, ?, ?, ?, ?, ?)", invoices)
+
+        anomalies = [
+            ("Brightline Supplies — monthly spend jumped 65%", "₹1,84,200 this month is ₹72,700 above the vendor's 3-month average. This is the largest vendor deviation in your dataset.", "high", "Detected 2 hours ago", 94),
+            ("Cash reserve trajectory changed", "Projected reserve crosses your ₹3L safety threshold in approximately 6 weeks if current spending continues.", "medium", "Detected today", 87),
+            ("Invoice INV-28491 — amount outside vendor pattern", "₹84,500 is 47% higher than this vendor's average invoice over the last six months.", "low", "Detected yesterday", 91)
+        ]
+        c.executemany("INSERT INTO anomalies (title, description, impact_level, detected_time, confidence_score) VALUES (?, ?, ?, ?, ?)", anomalies)
+        
+        c.execute("INSERT INTO user_settings (name, email, company, notifications) VALUES (?, ?, ?, ?)", ("Mohammad Kaif", "admin@asterco.in", "Aster & Co.", 1))
+
+        conn.commit()
+    
     conn.close()

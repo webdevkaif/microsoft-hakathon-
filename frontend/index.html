@@ -5,17 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FinGuard AI — Finance copilot</title>
   <link rel="stylesheet" href="/styles.css" />
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark-theme');
+    }
+  </script>
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">✦</div><div><div class="brand-name">FinGuard</div><div class="brand-sub">Finance copilot</div></div></div>
+      <div class="brand"><img src="/logo.jpg" class="brand-mark" alt="FinGuard Logo"><div><div class="brand-name">FinGuard</div><div class="brand-sub">Finance copilot</div></div></div>
       <div class="workspace-switch"><div class="avatar">AS</div><div><div class="workspace-name">Aster & Co.</div><div class="workspace-type">Growth workspace</div></div><span class="chevron">⌄</span></div>
       <nav class="nav" aria-label="Primary navigation">
         <button class="nav-item active" data-view="overview"><span class="nav-icon">⌂</span>Overview</button>
         <button class="nav-item" data-view="anomalies"><span class="nav-icon">△</span>Anomalies <span class="nav-badge">3</span></button>
         <button class="nav-item" data-view="forecast"><span class="nav-icon">↗</span>Cash forecast</button>
         <button class="nav-item" data-view="simulator"><span class="nav-icon">◌</span>What-if simulator</button>
+        <button class="nav-item" data-view="timemachine"><span class="nav-icon">⧖</span>Time Machine</button>
         <button class="nav-item" data-view="invoices"><span class="nav-icon">▤</span>Invoices</button>
         <button class="nav-item" data-view="userEntry"><span class="nav-icon">⊞</span>User Entry</button>
         <button class="nav-item" data-view="copilot"><span class="nav-icon">✦</span>AI Copilot</button>
@@ -25,11 +31,19 @@
       <div class="sidebar-bottom"><div class="ai-card"><div class="ai-sparkle">✦</div><div><strong>AI is watching</strong><p>3 signals need your attention</p></div></div><div class="user-row"><div class="avatar small">MK</div><div><strong>Mohammad Kaif</strong><span>Owner</span></div><button class="more">•••</button></div></div>
     </aside>
     <main class="main">
-      <header class="topbar"><div class="breadcrumbs"><span>Aster & Co.</span><span>/</span><strong id="breadcrumb">Overview</strong></div><div class="top-actions"><div class="period">Last 6 months <span>⌄</span></div><button class="icon-btn" aria-label="Notifications">♢<i></i></button><button class="avatar top-avatar">MK</button></div></header>
+      <header class="topbar"><div class="breadcrumbs"><span>Aster & Co.</span><span>/</span><strong id="breadcrumb">Overview</strong></div><div class="top-actions">
+        <select id="langSelect" style="background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 12px; margin-right: 8px; outline: none; cursor: pointer;">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+          <option value="es">Spanish</option>
+        </select>
+        <button class="icon-btn" id="themeToggle" style="font-size: 16px; margin-right: 8px;" aria-label="Toggle Theme">◐</button>
+        <div class="period">Last 6 months <span>⌄</span></div><button class="icon-btn" aria-label="Notifications">♢<i></i></button><button class="avatar top-avatar">MK</button></div></header>
       <div id="content" class="content"></div>
     </main>
   </div>
   <div id="toast" class="toast" role="status"></div>
+  <input type="file" id="globalPdfInput" accept=".pdf" style="display:none;">
   <script src="/app.js"></script>
 </body>
 </html>

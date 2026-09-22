@@ -6,7 +6,7 @@ A full-stack finance copilot prototype for the Track 3: Finance hackathon challe
 
 ```bash
 cd finguard-ai
-python3 backend/server.py
+python3 backend/main.py
 ```
 
 Open http://localhost:8000
