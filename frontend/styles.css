@@ -262,3 +262,7 @@ button { font: inherit; color: inherit; border: 0; background: none; cursor: poi
 /* Responsive */
 @media(max-width:980px){.sidebar{width:210px}.content{padding:28px 24px}.stats{grid-template-columns:repeat(2,1fr)}.grid-main{grid-template-columns:1fr}.simulator{grid-template-columns:1fr}.settings-grid{grid-template-columns:1fr;}}
 @media(max-width:640px){.sidebar{display:none}.topbar{padding:0 16px}.content{padding:24px 16px}.period{display:none}.head-row{align-items:flex-start;gap:16px;flex-direction:column}.stats{grid-template-columns:1fr 1fr;gap:12px}.stat-value{font-size:24px}.risk-grid{grid-template-columns:1fr}.table{min-width:560px}.card:has(.table){overflow-x:auto}.page-title{font-size:24px}}
+
+#profileDropdown.visible { display: block !important; animation: fadeIn 0.15s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+

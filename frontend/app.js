@@ -14,7 +14,7 @@ function anomalies(data){
     return `${viewHeader('Detection engine','Anomalies','Signals that fall outside your normal financial patterns.','<button class="btn primary" id="runAiScan">✦ Run AI Scan</button>')}<div class="alert-banner"><div class="banner-icon">△</div><div class="banner-text"><strong>${data.length} anomalies detected this week</strong><span>FinGuard compares new activity with your 90-day baseline and explains the deviation.</span></div></div><section class="card panel"><div class="panel-head"><div><h2 class="panel-title">Needs your attention</h2><p class="panel-sub">Sorted by potential cash-flow impact.</p></div><button class="tiny-select">All signals ⌄</button></div><div class="alert-list">${alertHtml}</div></section><div class="section-row"><h2>Risk indicators</h2></div><div class="risk-grid"><div class="card risk-card"><div class="risk-line"><span>Vendor concentration</span><strong>61 / 100</strong></div><div class="progress"><i style="width:61%"></i></div></div><div class="card risk-card"><div class="risk-line"><span>Expense volatility</span><strong>42 / 100</strong></div><div class="progress"><i style="width:42%" class="green"></i></div></div></div>`
 }
 
-function forecast(){return `${viewHeader('Forecast engine','Cash forecast','A clear view of what your cash balance could look like over the next 90 days.','<button class="btn ghost">Export forecast</button><button class="btn primary" data-view="simulator">✦ What-if simulator</button>')}<section class="card forecast-card"><div class="panel-head"><div><h2 class="panel-title">Projected cash balance</h2><p class="panel-sub">Baseline forecast · recurring revenue and known commitments</p></div><div class="legend"><span><b style="background:#3d9b75"></b>Actual</span><span><b style="background:#4b82c4"></b>Forecast</span></div></div><div class="chart-wrap"><svg viewBox="0 0 720 230" preserveAspectRatio="none"><line class="chart-grid" x1="0" y1="25" x2="720" y2="25"/><line class="chart-grid" x1="0" y1="82" x2="720" y2="82"/><line class="chart-grid" x1="0" y1="139" x2="720" y2="139"/><line class="chart-grid" x1="0" y1="196" x2="720" y2="196"/><path d="M0 174 C70 162 130 147 190 150 S270 136 330 130" fill="none" stroke="#3d9b75" stroke-width="3"/><path d="M330 130 C390 133 440 149 480 158 S565 177 610 190 S680 199 720 205" fill="none" stroke="#4b82c4" stroke-width="3" stroke-dasharray="6 6"/><line x1="0" y1="196" x2="720" y2="196" stroke="#dfb56f" stroke-dasharray="5 5"/><text class="chart-label" x="2" y="16">₹5L</text><text class="chart-label" x="2" y="73">₹4L</text><text class="chart-label" x="2" y="130">₹3L</text><text class="chart-label" x="2" y="187">₹2L</text><text class="chart-label" x="4" y="219">Now</text><text class="chart-label" x="228" y="219">30 days</text><text class="chart-label" x="452" y="219">60 days</text><text class="chart-label" x="668" y="219">90 days</text><text class="chart-label" x="530" y="191" fill="#bb8437">₹3L safety reserve</text></svg></div><div class="forecast-note"><strong>AI readout:</strong> You have a comfortable 30-day buffer. Without an intervention, cash is likely to approach your reserve threshold in week 6. Consider reviewing Brightline's new invoices and delaying non-critical payments.</div></section><div class="section-row"><h2>Forecast checkpoints</h2></div><div class="stats"><div class="card stat-card"><div class="stat-top">30-day outlook</div><div class="stat-value">₹3.74L</div><div class="stat-foot"><span class="up">Healthy</span> above reserve</div></div><div class="card stat-card"><div class="stat-top">60-day outlook</div><div class="stat-value">₹3.18L</div><div class="stat-foot"><span style="color:#b5772d;font-weight:650">Watch</span> approaching reserve</div></div><div class="card stat-card"><div class="stat-top">90-day outlook</div><div class="stat-value">₹2.76L</div><div class="stat-foot"><span class="down">Action needed</span> below reserve</div></div><div class="card insight"><div class="panel-title">Need more runway?</div><p class="insight-copy">Ask FinGuard to model a plan that protects your reserve.</p><button class="btn" data-view="simulator">Open simulator →</button></div></div>`}
+function forecast(){return `${viewHeader('Forecast engine','Cash forecast','A clear view of what your cash balance could look like over the next 90 days.','<button class="btn ghost" id="exportForecastBtn">Export forecast</button><button class="btn primary" data-view="simulator">✦ What-if simulator</button>')}<section class="card forecast-card"><div class="panel-head"><div><h2 class="panel-title">Projected cash balance</h2><p class="panel-sub">Baseline forecast · recurring revenue and known commitments</p></div><div class="legend"><span><b style="background:#3d9b75"></b>Actual</span><span><b style="background:#4b82c4"></b>Forecast</span></div></div><div class="chart-wrap"><svg viewBox="0 0 720 230" preserveAspectRatio="none"><line class="chart-grid" x1="0" y1="25" x2="720" y2="25"/><line class="chart-grid" x1="0" y1="82" x2="720" y2="82"/><line class="chart-grid" x1="0" y1="139" x2="720" y2="139"/><line class="chart-grid" x1="0" y1="196" x2="720" y2="196"/><path d="M0 174 C70 162 130 147 190 150 S270 136 330 130" fill="none" stroke="#3d9b75" stroke-width="3"/><path d="M330 130 C390 133 440 149 480 158 S565 177 610 190 S680 199 720 205" fill="none" stroke="#4b82c4" stroke-width="3" stroke-dasharray="6 6"/><line x1="0" y1="196" x2="720" y2="196" stroke="#dfb56f" stroke-dasharray="5 5"/><text class="chart-label" x="2" y="16">₹5L</text><text class="chart-label" x="2" y="73">₹4L</text><text class="chart-label" x="2" y="130">₹3L</text><text class="chart-label" x="2" y="187">₹2L</text><text class="chart-label" x="4" y="219">Now</text><text class="chart-label" x="228" y="219">30 days</text><text class="chart-label" x="452" y="219">60 days</text><text class="chart-label" x="668" y="219">90 days</text><text class="chart-label" x="530" y="191" fill="#bb8437">₹3L safety reserve</text></svg></div><div class="forecast-note"><strong>AI readout:</strong> You have a comfortable 30-day buffer. Without an intervention, cash is likely to approach your reserve threshold in week 6. Consider reviewing Brightline's new invoices and delaying non-critical payments.</div></section><div class="section-row"><h2>Forecast checkpoints</h2></div><div class="stats"><div class="card stat-card"><div class="stat-top">30-day outlook</div><div class="stat-value">₹3.74L</div><div class="stat-foot"><span class="up">Healthy</span> above reserve</div></div><div class="card stat-card"><div class="stat-top">60-day outlook</div><div class="stat-value">₹3.18L</div><div class="stat-foot"><span style="color:#b5772d;font-weight:650">Watch</span> approaching reserve</div></div><div class="card stat-card"><div class="stat-top">90-day outlook</div><div class="stat-value">₹2.76L</div><div class="stat-foot"><span class="down">Action needed</span> below reserve</div></div><div class="card insight"><div class="panel-title">Need more runway?</div><p class="insight-copy">Ask FinGuard to model a plan that protects your reserve.</p><button class="btn" data-view="simulator">Open simulator →</button></div></div>`}
 
 function simulator(){const exp=state.expenseDelta;const projected=402000-(71800*(exp/100+0.82));const level=projected<300000?'HIGH':projected<350000?'MEDIUM':'LOW';return `${viewHeader('Decision support','What-if simulator','Test a business decision before it becomes a financial surprise.','<button class="btn ghost" id="resetSim">Reset</button>')}<div class="simulator"><section class="card control-card"><h3>Build a scenario</h3><p>Adjust the levers and see the impact on your cash runway.</p><div class="range-group"><div class="range-head"><span>Monthly expenses</span><span class="range-value">+${exp}%</span></div><input class="range" id="expenseRange" type="range" min="0" max="40" value="${exp}" /><div class="quick-chips"><button class="chip" data-exp="0">Baseline</button><button class="chip" data-exp="15">+15%</button><button class="chip" data-exp="25">+25%</button></div></div><div class="range-group"><div class="range-head"><span>Monthly sales</span><span class="range-value">${state.salesDelta>=0?'+':''}${state.salesDelta}%</span></div><input class="range" id="salesRange" type="range" min="-30" max="30" value="${state.salesDelta}" /><div class="quick-chips"><button class="chip" data-sales="-20">-20%</button><button class="chip" data-sales="0">Baseline</button><button class="chip" data-sales="20">+20%</button></div></div><button class="btn primary" style="width:100%;margin-top:6px" id="applyScenario">Run scenario ✦</button></section><section class="card result-card"><div class="result-head"><div><h3>Scenario outcome</h3><p class="panel-sub">Expenses ${exp>=0?'+':''}${exp}% · Sales ${state.salesDelta>=0?'+':''}${state.salesDelta}%</p></div><span class="risk ${level==='HIGH'?'high':level==='MEDIUM'?'medium':'low'}">${level} RISK</span></div><div class="result-kpi">${money(projected)}</div><div class="result-caption">projected cash after 30 days</div><div class="scenario-flow"><div class="flow-step"><div class="flow-num">₹4.02L</div><div class="flow-label">Current cash</div></div><div class="flow-arrow">→</div><div class="flow-step"><div class="flow-num">+${exp}%</div><div class="flow-label">Expense change</div></div><div class="flow-arrow">→</div><div class="flow-step"><div class="flow-num">${money(projected)}</div><div class="flow-label">Projected cash</div></div></div><div class="recommendation"><strong>✦ FinGuard recommendation</strong>${level==='HIGH'?'Reduce discretionary spending by approximately '+money(Math.max(0,71800*exp/100))+' per month and review your top vendor commitments.':'Maintain a ₹3L minimum reserve. This scenario stays within the healthy zone, but monitor vendor concentration.'}</div></section></div>`}
 
@@ -306,22 +306,89 @@ async function render(){
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
 
-async function translateUI() {
-    if(state.lang === 'en') return;
-    toast('Translating...');
-    const elements = document.querySelectorAll('.page-title, .page-intro, .panel-title');
-    for(let el of elements) {
-        if(!el.dataset.orig) el.dataset.orig = el.textContent.trim();
-        const text = el.dataset.orig;
-        if(!text || text.length < 2) continue;
-        try {
-            const res = await fetch('/api/translate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:text, target_lang:state.lang})});
-            if(res.ok) {
-                const data = await res.json();
-                el.textContent = data.translatedText;
-            }
-        } catch(e){}
-    }
+// ── Instant client-side translation dictionary ──────────────────────────────
+const DICT = {
+  hi: {"Overview":"अवलोकन","Anomalies":"विसंगतियाँ","Cash forecast":"नकद पूर्वानुमान","What-if simulator":"क्या-अगर सिमुलेटर","Time Machine":"टाइम मशीन","Crisis Replay":"संकट प्रतिस्थापन","Invoices":"चालान","User Entry":"उपयोगकर्ता प्रविष्टि","AI Copilot":"एआई सहायक","Transactions":"लेनदेन","Vendors":"विक्रेता","Settings":"सेटिंग्स","Last 6 Months":"पिछले 6 महीने","Money in vs money out":"आमद बनाम खर्च","AI attention queue":"एआई ध्यान सूची","Cash balance":"नकद शेष","Monthly revenue":"मासिक राजस्व","Monthly expenses":"मासिक व्यय","Overall risk":"समग्र जोखिम","Spend signals":"खर्च संकेत","Projected cash balance":"अनुमानित नकद शेष"},
+  es: {"Overview":"Resumen","Anomalies":"Anomalías","Cash forecast":"Pronóstico de caja","What-if simulator":"Simulador hipotético","Time Machine":"Máquina del tiempo","Crisis Replay":"Repetición de crisis","Invoices":"Facturas","User Entry":"Entrada de usuario","AI Copilot":"Copiloto IA","Transactions":"Transacciones","Vendors":"Proveedores","Settings":"Configuración","Last 6 Months":"Últimos 6 meses","Money in vs money out":"Ingresos vs gastos","AI attention queue":"Cola de atención IA","Cash balance":"Saldo en efectivo","Monthly revenue":"Ingresos mensuales","Monthly expenses":"Gastos mensuales","Overall risk":"Riesgo general","Spend signals":"Señales de gasto","Projected cash balance":"Saldo proyectado"},
+  fr: {"Overview":"Aperçu","Anomalies":"Anomalies","Cash forecast":"Prévision de trésorerie","What-if simulator":"Simulateur de scénarios","Time Machine":"Machine temporelle","Crisis Replay":"Replay de crise","Invoices":"Factures","User Entry":"Saisie utilisateur","AI Copilot":"Copilote IA","Transactions":"Transactions","Vendors":"Fournisseurs","Settings":"Paramètres","Last 6 Months":"6 derniers mois","Money in vs money out":"Revenus vs dépenses","AI attention queue":"File d'attention IA","Cash balance":"Solde de trésorerie","Monthly revenue":"Revenu mensuel","Monthly expenses":"Dépenses mensuelles","Overall risk":"Risque global","Spend signals":"Signaux de dépenses","Projected cash balance":"Solde projeté"},
+  ar: {"Overview":"نظرة عامة","Anomalies":"الشذوذات","Cash forecast":"توقعات النقد","What-if simulator":"محاكي السيناريو","Time Machine":"آلة الزمن","Crisis Replay":"إعادة الأزمة","Invoices":"الفواتير","User Entry":"إدخال المستخدم","AI Copilot":"مساعد الذكاء","Transactions":"المعاملات","Vendors":"الموردون","Settings":"الإعدادات","Last 6 Months":"آخر 6 أشهر","Money in vs money out":"الدخل مقابل المصروف","AI attention queue":"قائمة انتباه الذكاء","Cash balance":"الرصيد النقدي","Monthly revenue":"الإيراد الشهري","Monthly expenses":"المصاريف الشهرية","Overall risk":"المخاطر الإجمالية","Spend signals":"إشارات الإنفاق","Projected cash balance":"الرصيد المتوقع"},
+  zh: {"Overview":"概览","Anomalies":"异常","Cash forecast":"现金预测","What-if simulator":"假设模拟器","Time Machine":"时间机器","Crisis Replay":"危机回放","Invoices":"发票","User Entry":"用户录入","AI Copilot":"AI助手","Transactions":"交易","Vendors":"供应商","Settings":"设置","Last 6 Months":"近6个月","Money in vs money out":"收入与支出","AI attention queue":"AI关注队列","Cash balance":"现金余额","Monthly revenue":"月收入","Monthly expenses":"月支出","Overall risk":"整体风险","Spend signals":"支出信号","Projected cash balance":"预计现金余额"},
+  de: {"Overview":"Übersicht","Anomalies":"Anomalien","Cash forecast":"Liquiditätsprognose","What-if simulator":"Was-wenn-Simulator","Time Machine":"Zeitmaschine","Crisis Replay":"Krisenwiederholung","Invoices":"Rechnungen","User Entry":"Benutzereingabe","AI Copilot":"KI-Copilot","Transactions":"Transaktionen","Vendors":"Lieferanten","Settings":"Einstellungen","Last 6 Months":"Letzte 6 Monate","Money in vs money out":"Einnahmen vs Ausgaben","AI attention queue":"KI-Aufmerkschafts-Warteschlange","Cash balance":"Kassenbestand","Monthly revenue":"Monatlicher Umsatz","Monthly expenses":"Monatliche Ausgaben","Overall risk":"Gesamtrisiko","Spend signals":"Ausgabesignale","Projected cash balance":"Prognostizierter Kassenbestand"},
+  pt: {"Overview":"Visão geral","Anomalies":"Anomalias","Cash forecast":"Previsão de caixa","What-if simulator":"Simulador hipotético","Time Machine":"Máquina do tempo","Crisis Replay":"Repetição de crise","Invoices":"Faturas","User Entry":"Entrada do usuário","AI Copilot":"Copiloto IA","Transactions":"Transações","Vendors":"Fornecedores","Settings":"Configurações","Last 6 Months":"Últimos 6 meses","Money in vs money out":"Receita vs despesas","AI attention queue":"Fila de atenção IA","Cash balance":"Saldo de caixa","Monthly revenue":"Receita mensal","Monthly expenses":"Despesas mensais","Overall risk":"Risco geral","Spend signals":"Sinais de gastos","Projected cash balance":"Saldo projetado"},
+  ru: {"Overview":"Обзор","Anomalies":"Аномалии","Cash forecast":"Прогноз наличности","What-if simulator":"Симулятор сценариев","Time Machine":"Машина времени","Crisis Replay":"Повтор кризиса","Invoices":"Счета","User Entry":"Ввод пользователя","AI Copilot":"ИИ-помощник","Transactions":"Транзакции","Vendors":"Поставщики","Settings":"Настройки","Last 6 Months":"Последние 6 месяцев","Money in vs money out":"Доходы vs расходы","AI attention queue":"Очередь внимания ИИ","Cash balance":"Остаток денежных средств","Monthly revenue":"Ежемесячная выручка","Monthly expenses":"Ежемесячные расходы","Overall risk":"Общий риск","Spend signals":"Сигналы расходов","Projected cash balance":"Прогнозируемый остаток"},
+  ja: {"Overview":"概要","Anomalies":"異常","Cash forecast":"現金予測","What-if simulator":"仮説シミュレーター","Time Machine":"タイムマシン","Crisis Replay":"危機リプレイ","Invoices":"請求書","User Entry":"ユーザー入力","AI Copilot":"AIコパイロット","Transactions":"取引","Vendors":"ベンダー","Settings":"設定","Last 6 Months":"過去6ヶ月","Money in vs money out":"収入と支出","AI attention queue":"AI注意キュー","Cash balance":"現金残高","Monthly revenue":"月次収益","Monthly expenses":"月次費用","Overall risk":"全体リスク","Spend signals":"支出シグナル","Projected cash balance":"予測現金残高"},
+  ko: {"Overview":"개요","Anomalies":"이상값","Cash forecast":"현금 예측","What-if simulator":"가정 시뮬레이터","Time Machine":"타임머신","Crisis Replay":"위기 재현","Invoices":"청구서","User Entry":"사용자 입력","AI Copilot":"AI 코파일럿","Transactions":"거래","Vendors":"공급업체","Settings":"설정","Last 6 Months":"지난 6개월","Money in vs money out":"수입 대 지출","AI attention queue":"AI 주의 대기열","Cash balance":"현금 잔액","Monthly revenue":"월간 수익","Monthly expenses":"월간 지출","Overall risk":"전체 리스크","Spend signals":"지출 신호","Projected cash balance":"예상 현금 잔액"},
+  ur: {"Overview":"جائزہ","Anomalies":"بے قاعدگیاں","Cash forecast":"نقد پیش گوئی","What-if simulator":"اگر سمیولیٹر","Time Machine":"ٹائم مشین","Crisis Replay":"بحران دوبارہ","Invoices":"رسیدیں","User Entry":"صارف اندراج","AI Copilot":"اے آئی معاون","Transactions":"لین دین","Vendors":"سپلائرز","Settings":"ترتیبات","Last 6 Months":"پچھلے 6 ماہ","Money in vs money out":"آمدنی بمقابلہ اخراجات","Cash balance":"نقد بیلنس","Monthly revenue":"ماہانہ آمدنی","Monthly expenses":"ماہانہ اخراجات","Overall risk":"مجموعی خطرہ","Spend signals":"خرچ کے اشارے","Projected cash balance":"متوقع نقد بیلنس"},
+  bn: {"Overview":"সারসংক্ষেপ","Anomalies":"অস্বাভাবিকতা","Cash forecast":"নগদ পূর্বাভাস","What-if simulator":"অনুমানমূলক সিমুলেটর","Time Machine":"সময় মেশিন","Crisis Replay":"সংকট পুনরাবৃত্তি","Invoices":"চালান","User Entry":"ব্যবহারকারী প্রবেশ","AI Copilot":"এআই সহযোগী","Transactions":"লেনদেন","Vendors":"বিক্রেতা","Settings":"সেটিংস","Last 6 Months":"গত ৬ মাস","Money in vs money out":"আয় বনাম ব্যয়","Cash balance":"নগদ উদ্বৃত্ত","Monthly revenue":"মাসিক রাজস্ব","Monthly expenses":"মাসিক ব্যয়","Overall risk":"সামগ্রিক ঝুঁকি","Spend signals":"ব্যয় সংকেত","Projected cash balance":"প্রক্ষেপিত নগদ উদ্বৃত্ত"},
+  ta: {"Overview":"கண்ணோட்டம்","Anomalies":"முரண்பாடுகள்","Cash forecast":"பணம் கணிப்பு","What-if simulator":"என்ன-ஆனால் உருவகப்படுத்தி","Time Machine":"கால இயந்திரம்","Crisis Replay":"நெருக்கடி மறுவாய்ப்பு","Invoices":"விலைப்பட்டியல்கள்","User Entry":"பயனர் உள்ளீடு","AI Copilot":"AI சகபயணி","Transactions":"பரிவர்த்தனைகள்","Vendors":"விற்பனையாளர்கள்","Settings":"அமைப்புகள்","Last 6 Months":"கடந்த 6 மாதங்கள்","Cash balance":"பண இருப்பு","Monthly revenue":"மாதாந்திர வருவாய்","Monthly expenses":"மாதாந்திர செலவுகள்","Overall risk":"ஒட்டுமொத்த அபாயம்","Spend signals":"செலவு சமிக்ஞைகள்","Projected cash balance":"திட்டமிட்ட பண இருப்பு"},
+  tr: {"Overview":"Genel Bakış","Anomalies":"Anormallikler","Cash forecast":"Nakit tahmini","What-if simulator":"Eğer-ise simülatörü","Time Machine":"Zaman makinesi","Crisis Replay":"Kriz tekrarı","Invoices":"Faturalar","User Entry":"Kullanıcı girişi","AI Copilot":"AI Yardımcısı","Transactions":"İşlemler","Vendors":"Satıcılar","Settings":"Ayarlar","Last 6 Months":"Son 6 ay","Money in vs money out":"Gelir - Gider","AI attention queue":"AI dikkat sırası","Cash balance":"Nakit bakiye","Monthly revenue":"Aylık gelir","Monthly expenses":"Aylık giderler","Overall risk":"Genel risk","Spend signals":"Harcama sinyalleri","Projected cash balance":"Tahmini nakit bakiye"}
+};
+
+function translateUI() {
+    const d = DICT[state.lang];
+    if(!d) return;
+    const els = document.querySelectorAll('.page-title, .page-intro, .panel-title, .nav-item, .stat-top, h2, h3');
+    els.forEach(el => {
+        const orig = el.dataset.orig || el.textContent.trim();
+        if(!el.dataset.orig) el.dataset.orig = orig;
+        if(d[orig]) el.textContent = d[orig];
+    });
+    // Nav items
+    document.querySelectorAll('[data-view]').forEach(btn => {
+        const orig = btn.dataset.orig || btn.textContent.trim().replace(/\s+/g,' ');
+        if(!btn.dataset.orig) btn.dataset.orig = orig;
+        // Re-append badge if present
+        const badge = btn.querySelector('.nav-badge');
+        const icon = btn.querySelector('.nav-icon');
+        const iconHtml = icon ? icon.outerHTML : '';
+        const badgeHtml = badge ? badge.outerHTML : '';
+        const translated = d[orig] || orig;
+        btn.innerHTML = iconHtml + translated + badgeHtml;
+    });
+    toast('✓ Translated to ' + document.getElementById('langSelect').options[document.getElementById('langSelect').selectedIndex].text.replace(/[^a-zA-Z ]/g,'').trim());
+}
+
+// ── CSV Export helper ─────────────────────────────────────────────────────────
+async function exportCSV(type) {
+    toast('Preparing export...');
+    let rows = [], filename = 'finguard_export.csv';
+    try {
+        if(type === 'forecast') {
+            const r1 = await fetch('/api/monthly-history');
+            const months = await r1.json();
+            const r2 = await fetch('/api/summary');
+            const s = await r2.json();
+            filename = 'finguard_forecast.csv';
+            rows.push(['Month','Revenue','Expenses','Cash Balance','Profit']);
+            months.forEach(m => rows.push([m.month, m.revenue, m.expenses, m.cash_balance, m.profit]));
+            rows.push([]);
+            rows.push(['Current Cash Balance', s.cash_balance]);
+            rows.push(['30-day Outlook (est.)', Math.round(s.cash_balance * 0.93)]);
+            rows.push(['60-day Outlook (est.)', Math.round(s.cash_balance * 0.79)]);
+            rows.push(['90-day Outlook (est.)', Math.round(s.cash_balance * 0.68)]);
+        } else {
+            // Full report
+            const r1 = await fetch('/api/transactions');
+            const txs = await r1.json();
+            const r2 = await fetch('/api/vendors');
+            const vds = await r2.json();
+            filename = 'finguard_report.csv';
+            rows.push(['=== TRANSACTIONS ===']);
+            rows.push(['ID','Date','Description','Type','Category','Amount']);
+            txs.forEach(t => rows.push([t.id, t.date, t.description, t.type, t.category, t.amount]));
+            rows.push([]);
+            rows.push(['=== VENDORS ===']);
+            rows.push(['Name','Monthly Spend','Risk','Last Payment']);
+            vds.forEach(v => rows.push([v.name, v.monthly_spend, v.risk, v.last_payment]));
+        }
+        const csv = rows.map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        toast('✓ ' + filename + ' downloaded!');
+    } catch(e) { toast('Export failed — is server running?'); }
 }
 
 function bind(){
@@ -334,7 +401,8 @@ function bind(){
     document.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{state.expenseDelta=+b.dataset.exp;render()});
     document.querySelectorAll('[data-sales]').forEach(b=>b.onclick=()=>{state.salesDelta=+b.dataset.sales;render()});
     const reset=document.getElementById('resetSim');if(reset)reset.onclick=()=>{state.expenseDelta=15;state.salesDelta=0;render()};
-    document.getElementById('exportBtn')?.addEventListener('click',()=>toast('Report prepared — ready to download'));
+    document.getElementById('exportBtn')?.addEventListener('click', () => exportCSV('report'));
+    document.getElementById('exportForecastBtn')?.addEventListener('click', () => exportCSV('forecast'));
     document.getElementById('applyScenario')?.addEventListener('click',()=>toast('Scenario analyzed with 90 days of history'));
     
     // AI Scan
@@ -352,11 +420,20 @@ function bind(){
     const gpi=document.getElementById('globalPdfInput');
     if(gpi){gpi.onchange=async(e)=>{const file=e.target.files[0];if(!file)return;toast('Uploading PDF...');const fd=new FormData();fd.append('file',file);try{const r=await fetch('/api/analyze-pdf',{method:'POST',body:fd});if(!r.ok){toast('Error uploading PDF');return;}const d=await r.json();toast('Analysis complete: ' + d.suggestion.substring(0, 50) + '...');}catch(err){toast('Error analyzing PDF')}};}
     
-    // Language selector
+    // Language selector — instant translation
     const langSelect=document.getElementById('langSelect');
     if(langSelect){
         langSelect.value=state.lang;
-        langSelect.onchange=(e)=>{state.lang=e.target.value;translateUI();};
+        langSelect.onchange=(e)=>{
+            state.lang=e.target.value;
+            if(state.lang==='en'){
+                // Restore originals
+                document.querySelectorAll('[data-orig]').forEach(el=>el.textContent=el.dataset.orig);
+                toast('✓ Switched to English');
+            } else {
+                translateUI();
+            }
+        };
     }
     
     // Theme toggle
@@ -420,6 +497,26 @@ function bind(){
     
     // Translate on initial load if language != en
     if(state.lang !== 'en') translateUI();
+
+    // Profile dropdown sign-out
+    const ddLogout = document.getElementById('dropdownLogout');
+    if(ddLogout) {
+        ddLogout.onclick = () => {
+            localStorage.removeItem('fg_token');
+            localStorage.removeItem('fg_username');
+            localStorage.removeItem('fg_name');
+            window.location.reload();
+        };
+    }
+    // Sync dropdown name
+    const dn = document.getElementById('dropdownName');
+    if(dn) dn.textContent = localStorage.getItem('fg_name') || localStorage.getItem('fg_username') || 'User';
+    // Close dropdown on outside click
+    document.addEventListener('click', e => {
+        const dd = document.getElementById('profileDropdown');
+        const av = document.getElementById('topAvatar');
+        if(dd && av && !av.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('visible');
+    }, {once: true});
 
     // Logout button
     const logoutBtn = document.getElementById('logoutBtn');
