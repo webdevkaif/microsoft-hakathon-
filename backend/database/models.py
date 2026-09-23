@@ -99,7 +99,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
-            password TEXT
+            password TEXT,
+            name TEXT DEFAULT ''
         )
     ''')
 
@@ -170,6 +171,12 @@ def seed_db():
         c.executemany("INSERT INTO anomalies (title, description, impact_level, detected_time, confidence_score) VALUES (?, ?, ?, ?, ?)", anomalies)
         
         c.execute("INSERT INTO user_settings (name, email, company, notifications) VALUES (?, ?, ?, ?)", ("Mohammad Kaif", "admin@asterco.in", "Aster & Co.", 1))
+
+        # Seed demo admin user
+        try:
+            c.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", ("admin", "admin123", "Mohammad Kaif"))
+        except Exception:
+            pass  # already exists
 
         # Seed transactions
         transactions = [

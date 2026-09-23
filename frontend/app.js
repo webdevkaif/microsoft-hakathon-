@@ -420,6 +420,27 @@ function bind(){
     
     // Translate on initial load if language != en
     if(state.lang !== 'en') translateUI();
+
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) {
+        logoutBtn.onclick = () => {
+            localStorage.removeItem('fg_token');
+            localStorage.removeItem('fg_username');
+            localStorage.removeItem('fg_name');
+            window.location.reload();
+        };
+    }
+
+    // Sync logged-in user info into sidebar/topbar
+    const storedName = localStorage.getItem('fg_name') || localStorage.getItem('fg_username');
+    if(storedName) {
+        const initials = storedName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+        const sa = document.getElementById('sidebarAvatar'); if(sa) sa.textContent = initials;
+        const sn = document.getElementById('sidebarName'); if(sn) sn.textContent = storedName;
+        const sr = document.getElementById('sidebarRole'); if(sr) sr.textContent = 'Member';
+        const ta = document.getElementById('topAvatar'); if(ta) ta.textContent = initials;
+    }
 }
 
 render();

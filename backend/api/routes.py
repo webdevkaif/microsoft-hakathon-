@@ -48,6 +48,7 @@ class TimeMachineRequest(BaseModel):
 class AuthRequest(BaseModel):
     username: str
     password: str
+    name: str = ""
 
 @router.get("/health")
 def health():
@@ -290,7 +291,7 @@ def login(req: AuthRequest, db = Depends(get_db)):
 def register(req: AuthRequest, db = Depends(get_db)):
     cursor = db.cursor()
     try:
-        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (req.username, req.password))
+        cursor.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", (req.username, req.password, req.name or req.username))
         db.commit()
         return {"message": "User created successfully"}
     except Exception:
